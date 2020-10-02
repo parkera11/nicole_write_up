@@ -506,12 +506,15 @@ for (i in 1:nsubkeep){ #loop through subjects
 }
 print("one-group t-test vs zero for slopes")
 t.test(vocmedians$slope[vocmedians$condition=='blocked'])
+lsr::cohensD(vocmedians$slope[vocmedians$condition=='blocked'], mu= 0)
 t.test(vocmedians$slope[vocmedians$condition=='interleaved'])
+lsr::cohensD(vocmedians$slope[vocmedians$condition=='interleaved'], mu= 0)
 
 print("T test comparing slopes")
 t.test(vocmedians$slope ~ vocmedians$condition)
 # bayes
 slope_no_na <- vocmedians %>% tidyr::drop_na(slope)
+lsr::cohensD(vocmedians$slope ~ vocmedians$condition)
 bf = BayesFactor::ttestBF(formula= slope ~ condition, data= slope_no_na)
 bf
 
@@ -566,12 +569,15 @@ for (i in 1:nsubkeep){ #loop through subjects
 }
 print("one-group t-test vs zero for slopes")
 t.test(vocerrs$slope[vocerrs$condition=='blocked'])
+lsr::cohensD(vocerrs$slope[vocerrs$condition=='blocked'], mu= 0)
 t.test(vocerrs$slope[vocerrs$condition=='interleaved'])
+lsr::cohensD(vocerrs$slope[vocerrs$condition=='interleaved'], mu= 0)
 
 print("T test comparing slopes")
 t.test(vocerrs$slope ~ vocerrs$condition)
 # bayes
 slope_no_na <- vocerrs %>% tidyr::drop_na(slope)
+lsr::cohensD(vocerrs$slope ~ vocerrs$condition)
 bf = BayesFactor::ttestBF(formula= slope ~ condition, data= slope_no_na)
 bf
 
