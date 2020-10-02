@@ -504,21 +504,26 @@ for (i in 1:nsubkeep){ #loop through subjects
    mylm <- summary(lm(log10(temp)~theseblocks))
    vocmedians$slope[myrows[1]]<- mylm$coefficients[2,1]
 }
-print("one-group t-test vs zero for slopes")
+print("one-group t-test vs zero for slopes (blocked)")
 t.test(vocmedians$slope[vocmedians$condition=='blocked'])
+print("one-group cohen's d (blocked)")
 lsr::cohensD(vocmedians$slope[vocmedians$condition=='blocked'], mu= 0)
+print("one-group t-test vs zero for slopes (interleaved)")
 t.test(vocmedians$slope[vocmedians$condition=='interleaved'])
+print("one-group cohen's d (interleaved)")
 lsr::cohensD(vocmedians$slope[vocmedians$condition=='interleaved'], mu= 0)
 
-print("T test comparing slopes")
+# t test
+print("T test comparing RT slopes")
 t.test(vocmedians$slope ~ vocmedians$condition)
-# bayes
-slope_no_na <- vocmedians %>% tidyr::drop_na(slope)
+# cohen's d
+print("Cohen's d RT slope")
 lsr::cohensD(vocmedians$slope ~ vocmedians$condition)
-bf = BayesFactor::ttestBF(formula= slope ~ condition, data= slope_no_na)
+# bayes
+print("Bayes Factor RT slope")
+slope_no_na <- vocmedians %>% tidyr::drop_na(slope)
+bf = BayesFactor::ttestBF(formula= slope ~ condition, data= slope_no_na, iterations = 100000)
 bf
-
-summary(lm(data= vocmedians, slope~ condition * age))
 
 change_RT <- ggplot(vocmedians, aes(x=condition, y=slope, fill=condition, shape= condition, linetype= condition)) +
   geom_violin(alpha= .1, size=1) +
@@ -541,19 +546,19 @@ vocerrs<-aggregate(Attempts~ block+subject+condition, data= vocshort, FUN= mean)
 colnames(vocerrs)<-c('block','subject','condition','attempts')
 
 ## THIS IS FROM NICOLE'S THESIS ##
-vocerrs$decline <-NA
-for (i in seq(1,nrow(vocerrs),by=4)){
-  vocerrs$decline[i]<-vocerrs$attempts[i+3]-vocerrs$attempts[i]
-}
+#vocerrs$decline <-NA
+#for (i in seq(1,nrow(vocerrs),by=4)){
+#  vocerrs$decline[i]<-vocerrs$attempts[i+3]-vocerrs$attempts[i]
+#}
 
-print("one-group t-test vs zero for attmept reduction")
-t.test(vocerrs$decline[vocerrs$condition=='blocked'], alternative= "less")
-t.test(vocerrs$decline[vocerrs$condition=='interleaved'], alternative= "less")
+#print("one-group t-test vs zero for attmept reduction")
+#t.test(vocerrs$decline[vocerrs$condition=='blocked'], alternative= "less")
+#t.test(vocerrs$decline[vocerrs$condition=='interleaved'], alternative= "less")
 
-print("T test comparing interleaved and blocked error decline block 1 to 4")
-t.test(vocerrs$decline ~ vocerrs$condition)
-bf2 = BayesFactor::ttestBF(formula= decline ~ condition, data= na.omit(vocerrs))
-bf2
+#print("T test comparing interleaved and blocked error decline block 1 to 4")
+#t.test(vocerrs$decline ~ vocerrs$condition)
+#bf2 = BayesFactor::ttestBF(formula= decline ~ condition, data= na.omit(vocerrs))
+#bf2
 
 ## POSSION REGRESSION ##
 # Here I use a possion regression to estimate the beta using the count data. This generates a beta weight and the approach is almost identical to our approach for reaction times.
@@ -567,18 +572,24 @@ for (i in 1:nsubkeep){ #loop through subjects
   mylm <- summary(glm(Attempts~ block, family="poisson", data= temp))
   vocerrs$slope[myrows[1]]<- mylm$coefficients[2,1]
 }
-print("one-group t-test vs zero for slopes")
+
+print("one-group t-test vs zero for attempts (blocked)")
 t.test(vocerrs$slope[vocerrs$condition=='blocked'])
+print("one-group Cohen's d for attempts (blocked)")
 lsr::cohensD(vocerrs$slope[vocerrs$condition=='blocked'], mu= 0)
+print("one-group t-test vs zero for attempts (Interleaved)")
 t.test(vocerrs$slope[vocerrs$condition=='interleaved'])
+print("one-group Cohen's d for attempts (Interleaved)")
 lsr::cohensD(vocerrs$slope[vocerrs$condition=='interleaved'], mu= 0)
 
-print("T test comparing slopes")
+print("T test comparing slopes (attemnpts)")
 t.test(vocerrs$slope ~ vocerrs$condition)
-# bayes
-slope_no_na <- vocerrs %>% tidyr::drop_na(slope)
+print("Cohen's d comparing slopes (attempts)")
 lsr::cohensD(vocerrs$slope ~ vocerrs$condition)
-bf = BayesFactor::ttestBF(formula= slope ~ condition, data= slope_no_na)
+# bayes
+print("Bayes factor attempts")
+slope_no_na_acc <- vocerrs %>% tidyr::drop_na(slope)
+bf = BayesFactor::ttestBF(formula= slope ~ condition, data= slope_no_na_acc, iterations = 100000)
 bf
 
 change_Acc <- ggplot(vocerrs, aes(x=condition, y=slope, fill=condition, shape= condition, linetype= condition)) +
