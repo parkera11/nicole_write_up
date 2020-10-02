@@ -476,7 +476,7 @@ In the Reaction Time analysis, we plan to only consider the trials in which the 
 ```{r analyseslopes}
 #Slopes for correct responses based on median RTpick.k by block
 corrvocab <- filter(vocshort,Mistakes==0)
-vocmedians<-aggregate(RTpick.k~ block+subject+condition, data= corrvocab, FUN= mean)
+vocmedians<-aggregate(RTpick.k~ block+subject+condition, data= corrvocab, FUN= median)
 colnames(vocmedians)<-c('block','subject','condition','RTpick.k')
 
 #create column for age band, also age in months for later Ancova
